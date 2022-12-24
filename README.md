@@ -1,14 +1,13 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-**Table of Contents**
-
 - [Deploy ML Model](#deploy-ml-model)
   - [Project description](#project-description)
     - [Create a ML model](#create-a-ml-model)
     - [Make an API to make predictions](#make-an-api-to-make-predictions)
-    - [Set up a virtual environment](#set-up-a-virtual-environment)
-    - [Dockerize the application](#dockerize-the-application)
+    - [Containerize the application](#containerize-the-application)
+      - [Set up a virtual environment](#set-up-a-virtual-environment)
+      - [Writing a Docker file](#writing-a-docker-file)
     - [Set up & configure an AWS EC2 instance](#set-up--configure-an-aws-ec2-instance)
     - [Test the service](#test-the-service)
 
@@ -128,7 +127,34 @@ pip freeze > requirements.txt
 
 #### Writing a Docker file
 
-<!-- The next step in order to containerize our application is to  -->
+We containerize using Docker. Doing so requires to write a docker file, as well as execute a few commands. The Dockerfile contains a set of instructions for Docker to find and expose the application. Here is the content of the Dockerfile:
+
+```docker
+FROM python:3.10-slim
+COPY ./app.py /deploy/
+COPY ./requirements.txt /deploy/
+COPY ./models/iris_trained_model.pkl /deploy/models/iris_trained_model.pkl
+WORKDIR /deploy/
+RUN pip install -r requirements.txt
+EXPOSE 5050
+ENTRYPOINT ["python", "app.py"]
+```
+
+Let us detail the content of the Dockerfile slightly. First we grab the `python:3.10-slim` image from dockerhub, then we copy a bunch of files that will be useful for the app to run to the `deploy` folder. We change directory to the `deploy` folder, install the library specified in `requirements.txt` and expose port 5050. Finally, we run the `app.py` file with Python.
+
+Now, we're only a few steps away from having a dockerized app. We simply need to build the Docker app:
+
+```shell
+docker build -t app-iris .
+```
+
+where `-t` provides the `app-iris` tag for the image we are building.
+
+Finally, we run the application to see if everything works as expected:
+
+```shell
+docker run -p 5050:5050 app-iris .
+```
 
 ### Set up & configure an AWS EC2 instance
 

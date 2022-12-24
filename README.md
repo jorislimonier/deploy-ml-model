@@ -74,9 +74,61 @@ Indeed, the model works and the accuracy is the same as with the initial model.
 
 ### Make an API to make predictions
 
-### Set up a virtual environment
+Now that the ML model had been created, we need to allow requests to be made. We make a small landing page which displays "Hello World!" and we make a second page for predictions. The prediction page live at the route `/predict` and if you pass data to it, it will return the prediction using the model we saved in the previous section. Here is the code:
 
-### Dockerize the application
+```python
+# Serve model as a flask application
+
+import pickle
+import numpy as np
+from flask import Flask, request
+
+model = None
+app = Flask(__name__)
+
+
+def load_model():
+  global model
+  # model variable refers to the global variable
+  with open("models/iris_trained_model.pkl", "rb") as f:
+    model = pickle.load(f)
+
+
+@app.route("/")
+def home_endpoint():
+  return "Hello World!"
+
+
+@app.route("/predict", methods=["POST"])
+def get_prediction():
+  # Works only for a single sample
+  if request.method == "POST":
+    data = request.get_json()  # Get data posted as a json
+    data = np.array(data)[np.newaxis, :]  # converts shape from (4,) to (1, 4)
+    prediction = model.predict(data)  # runs globally loaded model on the data
+  return str(prediction[0])
+
+
+if __name__ == "__main__":
+  load_model()  # load model at the beginning once only
+  app.run(host="0.0.0.0", port=5050)
+```
+
+### Containerize the application
+
+Now that we made a model and allowed others to call it through an API, we need to containerize it. Containerizing it means creating a set of instructions for the model to be able to run on any machine, be it a Linux, Windows or Mac machine, as well as in a server, which will be our primary usecase. Doing so requires to set up a virtual environment and then writing a Docker file.
+
+#### Set up a virtual environment
+
+The Python virtual environment will specify which libraries running the project requires, as well as the version for each library. Once inside a virtual environment with appropriate libraries installed, we run the following command to save all this information into our `requirements.txt` file:
+
+```shell
+pip freeze > requirements.txt
+```
+
+#### Writing a Docker file
+
+<!-- The next step in order to containerize our application is to  -->
 
 ### Set up & configure an AWS EC2 instance
 

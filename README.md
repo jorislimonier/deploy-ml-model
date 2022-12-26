@@ -11,9 +11,11 @@
       - [Test our local Docker app](#test-our-local-docker-app)
     - [Set up & configure an AWS EC2 instance](#set-up--configure-an-aws-ec2-instance)
     - [Test the service](#test-the-service)
-  - [Resources](#resources)
+  - [Thank you](#thank-you)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+Project largely inspired by [this](https://towardsdatascience.com/simple-way-to-deploy-machine-learning-models-to-cloud-fd58b771fdcf) tutorial.
 
 # Deploy ML Model
 
@@ -220,14 +222,18 @@ where `<file-to-copy>` is the name of each file you need to move into your clust
 
 Next, build and run your Docker image from withing your cluster by reusing almost the same build and run commands as above. Simply replace port 5050 by 80. We used port 5050 locally because port 80 is a reserved port locally, but we don't need to take these precautions on the cluster.
 
-<!-- ### Test the service
+### Test the service
 
 Now, go to your instance by copy-pasting the public DNS name into your search bar. Make sure "http" is prepended by your browser, not https (as mine did). You should see the same "Hello, World!" as before. If this is not the case, go back and fix your bugs. Otherwise, test that your prediction function is callable with:
 
 ```sh
 curl -X POST <public-dns-name>:80/predict -H 'Content-Type: application/json' -d '[5.9,3.0,5.1,1.8]'
-``` -->
+```
 
-## Resources
+You should get the same prediction as when we tested locally. If so, then **you succeeded!**
 
-Project largely inspired by [this](https://towardsdatascience.com/simple-way-to-deploy-machine-learning-models-to-cloud-fd58b771fdcf) tutorial.
+When you are done playing around, remember to terminate your instance in order to avoid bad billing surprises.
+
+## Thank you
+
+:star: If you found this project insightful, please star it :star:

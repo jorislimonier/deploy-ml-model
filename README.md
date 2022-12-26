@@ -8,8 +8,10 @@
     - [Containerize the application](#containerize-the-application)
       - [Set up a virtual environment](#set-up-a-virtual-environment)
       - [Writing a Docker file](#writing-a-docker-file)
+      - [Test our local Docker app](#test-our-local-docker-app)
     - [Set up & configure an AWS EC2 instance](#set-up--configure-an-aws-ec2-instance)
     - [Test the service](#test-the-service)
+  - [Resources](#resources)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -169,6 +171,22 @@ curl -X POST 0.0.0.0:5050/predict -H 'Content-Type: application/json' -d '[5.9,3
 
 This command should return 0, 1 or 2, which is the class predicted by the algorithm. Beware that the number is printed right before the name of your machine within the terminal, therefore it is not very visible.
 
+Now, we must start an EC2 instance and move everything that is needed on it.
+
 ### Set up & configure an AWS EC2 instance
 
+Log in [AWS EC2](https://eu-west-3.console.aws.amazon.com/ec2/home) and select "Key pairs" on the left panel. Create a key pair, download it and give it appropriate permissions with:
+
+```sh
+chmod 400 key-file-name.pem
+```
+
+(replace `key-file-name` with the name of the key pair file on your computer).
+
+Next, click on "Launch Instance", choose the Amazon Machine Instance (AMI) from the list of options. I chose the default "Amazon Linux 2 AMI". This determines the operating system of the virtual machine of your instance.
+
 ### Test the service
+
+## Resources
+
+Project largely inspired by [this](https://towardsdatascience.com/simple-way-to-deploy-machine-learning-models-to-cloud-fd58b771fdcf) tutorial.

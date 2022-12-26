@@ -183,9 +183,50 @@ chmod 400 key-file-name.pem
 
 (replace `key-file-name` with the name of the key pair file on your computer).
 
-Next, click on "Launch Instance", choose the Amazon Machine Instance (AMI) from the list of options. I chose the default "Amazon Linux 2 AMI". This determines the operating system of the virtual machine of your instance.
+Next, click on "Launch Instance", choose the Amazon Machine Instance (AMI) from the list of options. I chose the default "Amazon Linux 2 AMI". This determines the operating system of the virtual machine of your instance. Then, choose the capacities of the instance you want to launch, most likely "t2.micro", which is basically free. Finally, create a security group to allow HTTP traffic on port 80. This will make your instance reachable at port 80 through HTTP requests. Finally, launch your instance and wait until it finishes launching.
 
-### Test the service
+Once the instance has launched, use your terminal to ssh into it with the following command:
+
+```sh
+ssh -i <path-to-your-key-pair.pem> <public-dns-name-of-your-instance>
+```
+
+where:
+
+- `<path-to-your-key-pair.pem>` is the path to your key pair on your computer
+- `<public-dns-name-of-your-instance>` is the public name of your DNS. It should look like `ec2-12-34-56-789.eu-west-3.compute.amazonaws.com`
+
+Once you are in your instance, run the following commands explained in the [documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-container-image.html):
+
+```sh
+sudo amazon-linux-extras install docker
+sudo yum install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+```
+
+Log out of your instance with <kbd>Ctrl</kbd> + <kbd>D</kbd> and copy the files needed to run your app into the cluster with:
+
+```sh
+scp -i /path/my-key-pair.pem <file-to-copy> ec2-user@public-dns-name:/home/ec2-user
+```
+
+where `<file-to-copy>` is the name of each file you need to move into your cluster. The files needed should be:
+
+- `requirements.txt`
+- `app.py`
+- `models/iris_trained_models.pkl`
+- `Dockerfile`
+
+Next, build and run your Docker image from withing your cluster by reusing almost the same build and run commands as above. Simply replace port 5050 by 80. We used port 5050 locally because port 80 is a reserved port locally, but we don't need to take these precautions on the cluster.
+
+<!-- ### Test the service
+
+Now, go to your instance by copy-pasting the public DNS name into your search bar. Make sure "http" is prepended by your browser, not https (as mine did). You should see the same "Hello, World!" as before. If this is not the case, go back and fix your bugs. Otherwise, test that your prediction function is callable with:
+
+```sh
+curl -X POST <public-dns-name>:80/predict -H 'Content-Type: application/json' -d '[5.9,3.0,5.1,1.8]'
+``` -->
 
 ## Resources
 

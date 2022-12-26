@@ -156,6 +156,19 @@ Finally, we run the application to see if everything works as expected:
 docker run -p 5050:5050 app-iris .
 ```
 
+If no error is obtained, we are ready for the last phase of local deployment.
+
+#### Test our local Docker app
+
+We now need to send a request to our running app in order to check that everything works fine locally. With the app running, going to `http://0.0.0.0:5050/` should display a simple page with "Hello, World!" on it.\
+Now we can test the prediction function by running the following command in a terminal:
+
+```sh
+curl -X POST 0.0.0.0:5050/predict -H 'Content-Type: application/json' -d '[5.9,3.0,5.1,1.8]'
+```
+
+This command should return 0, 1 or 2, which is the class predicted by the algorithm. Beware that the number is printed right before the name of your machine within the terminal, therefore it is not very visible.
+
 ### Set up & configure an AWS EC2 instance
 
 ### Test the service
